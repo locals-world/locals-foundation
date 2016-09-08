@@ -1,47 +1,44 @@
 module.exports = function(deployer) {
 
-		//	var fs = require('fs');
-		var lightwallet = require('../node_modules/eth-lightwallet');
-		var HookedWeb3Provider = require("../node_modules/hooked-web3-provider");
 
-		//console.log(truffle);
-		//	debugger;
-		var contents = JSON.stringify(require('../wallet.json'));
-		console.log(contents);
-		var global_keystore = lightwallet.keystore.deserialize(contents);
+	var addresses = deployer.provider.transaction_signer.getAddresses();
 
-		global_keystore.passwordProvider = function(callback) {
-			console.log('PWD requested...');
-			callback(null, 'test');
-		};
+	deployer.deploy(LocalsFoundationToken, 62200, 0, 'Locals Foundation Token', 'LFT').then(function() {
+		console.log('instance', LocalsFoundationToken.address);
 
-		account = global_keystore.getAddresses()[0];
-		console.log('Main account is ', account);
-
-		lightwallet.keystore.deriveKeyFromPassword('test', function(err, pwDerivedKey) {
+		var contract = LocalsFoundationToken.deployed();
 
 
-			var provider = new HookedWeb3Provider({
-				host: 'http://109.123.70.141:8545',
-				transaction_signer: global_keystore
+		var balances = [
+			8200,
+			8200,
+			8200,
+			1000,
+			1000,
+			1000,
+			1000,
+			1000,
+			1000,
+			1000,
+			5000,
+			1000
+		];
+
+
+		balances.forEach(function(element, index, array) {
+			contract.transfer('0x' + addresses[index + 1], element).then(function() {
+				console.log('transfered ', element, 'to', addresses[index + 1]);
+
+				contract.balanceOf.call('0x' + addresses[index+1]).then(function(balance) {
+					console.log('balance of ',addresses[index+1],'=',balance.valueOf());
+				});
+				contract.balanceOf.call('0x' + addresses[0]).then(function(balance) {
+					console.log('balance of ',addresses[0],'=',balance.valueOf());
+				});
+
 			});
-
-
-			var publickey = global_keystore.getAddresses()[0];
-			console.log('deploy contract via', publickey);
-
-			LocalsFoundationToken.setProvider(provider);
-			LocalsFoundationToken.new().then(function(tx) {
-				console.log('deploy', tx);
-				// We just talked to the ethereum network!
-			}).catch(function(err) {
-				console.log("Error creating contract!");
-				console.log(err.stack);
-			})
 		});
+
+
+	});
 }
-
-		//		deployer.deploy(LocalsFoundationToken);
-		//		deployer.autolink();
-
-		//		console.log

@@ -13,25 +13,24 @@ import "owned.sol";
 contract LocalsFoundationToken is Token,owned  {
  
     mapping (address => bool) public whitelist;
-
+    string public name;
+    string public symbol;
+    string public version;
+    uint8 public decimals;
 
     function LocalsFoundationToken(
         uint256 initialSupply,
-        string tokenName,
         uint8 decimalUnits,
-        uint256 _minEthbalance,
-        string tokenSymbol,
-        string versionOfTheCode
+        string tokenName,
+        string tokenSymbol
         ) {
-        // balanceOf[msg.sender] = initialSupply;              // Give the creator all initial tokens
-        // totalSupply = initialSupply;                        // Update total supply
-        // name = tokenName;                                   // Set the name for display purposes
-        // symbol = tokenSymbol;                               // Set the symbol for display purposes
-        // decimals = decimalUnits;                            // Amount of decimals for display purposes
-        // version = versionOfTheCode;
-        // minEthbalance = _minEthbalance;
-        // owner = msg.sender;
-        // whitelist[msg.sender];
+        balances[msg.sender] = initialSupply;              // Give the creator all initial tokens
+        totalSupply = initialSupply;                        // Update total supply
+        name = tokenName;                                   // Set the name for display purposes
+        symbol = tokenSymbol;                               // Set the symbol for display purposes
+        decimals = decimalUnits;                            // Amount of decimals for display purposes
+        owner = msg.sender;
+        whitelist[msg.sender] = true;
     }
 
     function transfer(address _to, uint256 _value) returns (bool success) {
